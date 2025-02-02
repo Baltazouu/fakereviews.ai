@@ -15,6 +15,7 @@ from sklearn.ensemble import RandomForestClassifier
 
 # Load datas
 df = pd.read_csv("./data/fake_reviews.csv")
+df2 = pd.read_csv("./data/fake_reviews_2.csv")
 
 # Filter by type
 df_fake = df[df["label"] == "CG"]  # Fake reviews (Computer Generated)

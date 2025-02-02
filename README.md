@@ -19,7 +19,7 @@
 ``python3 -m venv fake_review_env``
 ``source mon_env/bin/activate``
 
-** Install dependancies **
+**Install dependancies**
 
 ``pip install -r requirements.txt``
 
