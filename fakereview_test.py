@@ -3,44 +3,67 @@ import pandas as pd
 import re
 import string
 
+# Fonction de prétraitement du texte
 def wordopt(text):
     text = text.lower()
-    text = re.sub('\[.*?\]', '', text)
-    text = re.sub("\\W"," ",text) 
-    text = re.sub('https?://\S+|www\.\S+', '', text)
-    text = re.sub('<.*?>+', '', text)
-    text = re.sub('[%s]' % re.escape(string.punctuation), '', text)
-    text = re.sub('\n', '', text)
-    text = re.sub('\w*\d\w*', '', text)    
-    return text
+    text = re.sub(r"\[.*?\]", "", text)  # Suppression des crochets et leur contenu
+    text = re.sub(r"\W", " ", text)  # Suppression des caractères non alphanumériques
+    text = re.sub(r"https?://\S+|www\.\S+", "", text)  # Suppression des URLs
+    text = re.sub(r"<.*?>+", "", text)  # Suppression des balises HTML
+    text = re.sub(r"[%s]" % re.escape(string.punctuation), "", text)  # Suppression de la ponctuation
+    text = re.sub(r"\n", " ", text)  # Suppression des sauts de ligne
+    text = re.sub(r"\w*\d\w*", "", text)  # Suppression des mots contenant des chiffres
+    return text.strip()
 
+# Fonction pour convertir la sortie du modèle en étiquette lisible
 def output_label(n):
     return "Fake Review" if n == 0 else "Not A Fake Review"
 
-def manual_testing(news):
-    testing_news = {"text_": [news]}
-    new_def_test = pd.DataFrame(testing_news)
-    new_def_test["text_"] = new_def_test["text_"].apply(wordopt)
-    new_x_test = new_def_test["text_"]
-    new_xv_test = vectorization.transform(new_x_test)
-    
-    pred_LR = LR.predict(new_xv_test)
-    pred_DT = DT.predict(new_xv_test)
-    pred_GBC = GBC.predict(new_xv_test)
-    pred_RFC = RFC.predict(new_xv_test)
+# Chargement des modèles entraînés et du vectorizer
+try:
+    LR = joblib.load("models/logistic_regression.pkl")
+    DT = joblib.load("models/decision_tree.pkl")
+    GBC = joblib.load("models/gradient_boosting.pkl")
+    RFC = joblib.load("models/random_forest.pkl")
+    vectorization = joblib.load("models/vectorizer.pkl")
+except Exception as e:
+    print(f"Erreur lors du chargement des modèles : {e}")
+    exit(1)
 
-    print(f"\n\nLR Prediction: {output_label(pred_LR[0])} \nDT Prediction: {output_label(pred_DT[0])} \nGBC Prediction: {output_label(pred_GBC[0])} \nRFC Prediction: {output_label(pred_RFC[0])}")
+# Fonction de test manuel
+def manual_testing(review):
+    try:
+        # Création d'un DataFrame temporaire pour le test
+        test_df = pd.DataFrame({"text_": [review]})
+        test_df["text_"] = test_df["text_"].apply(wordopt)
+        
+        # Transformation du texte avec le vectorizer chargé
+        new_xv_test = vectorization.transform(test_df["text_"])
 
-# Load saved models and vectorizer
-LR = joblib.load('models/lr_model.pkl')
-DT = joblib.load('models/dt_model.pkl')
-GBC = joblib.load('models/gbc_model.pkl')
-RFC = joblib.load('models/rfc_model.pkl')
-vectorization = joblib.load('models/vectorizer.pkl')
+        # Vérification que le nombre de features est bien le même que celui du modèle
+        if new_xv_test.shape[1] != vectorization.get_feature_names_out().shape[0]:
+            print("Erreur : Le vectorizer ne correspond pas au modèle entraîné.")
+            return
 
-# Manual testing
-fake_review1 = input("Enter a fake or real review: ")
-manual_testing(fake_review1)
+        # Prédictions avec tous les modèles
+        pred_LR = LR.predict(new_xv_test)
+        pred_DT = DT.predict(new_xv_test)
+        pred_GBC = GBC.predict(new_xv_test)
+        pred_RFC = RFC.predict(new_xv_test)
 
-fake_review2 = input("Enter a fake or real review: ")
-manual_testing(fake_review2)
+        # Affichage des résultats
+        print(f"\nLR Prediction: {output_label(pred_LR[0])}")
+        print(f"DT Prediction: {output_label(pred_DT[0])}")
+        print(f"GBC Prediction: {output_label(pred_GBC[0])}")
+        print(f"RFC Prediction: {output_label(pred_RFC[0])}\n")
+
+    except Exception as e:
+        print(f"Erreur lors de la prédiction : {e}")
+
+# Test interactif
+while True:
+    user_input = input("Enter a review (or type 'exit' to quit): ").strip()
+    if user_input.lower() == "exit":
+        print("Exiting...")
+        break
+    manual_testing(user_input)

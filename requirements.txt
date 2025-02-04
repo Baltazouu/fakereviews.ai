@@ -3,3 +3,8 @@ numpy
 seaborn
 matplotlib
 scikit-learn
+openpyxl
+wordcloud
+plotly
+xgboost
+nltk
