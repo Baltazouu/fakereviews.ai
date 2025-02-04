@@ -3,7 +3,6 @@ import pandas as pd
 import re
 import string
 
-# Fonction de prétraitement du texte
 def wordopt(text):
     text = text.lower()
     text = re.sub(r"\[.*?\]", "", text)  # Suppression des crochets et leur contenu
@@ -15,43 +14,36 @@ def wordopt(text):
     text = re.sub(r"\w*\d\w*", "", text)  # Suppression des mots contenant des chiffres
     return text.strip()
 
-# Fonction pour convertir la sortie du modèle en étiquette lisible
 def output_label(n):
     return "Fake Review" if n == 0 else "Not A Fake Review"
 
-# Chargement des modèles entraînés et du vectorizer
 try:
-    LR = joblib.load("models/logistic_regression.pkl")
-    DT = joblib.load("models/decision_tree.pkl")
-    GBC = joblib.load("models/gradient_boosting.pkl")
-    RFC = joblib.load("models/random_forest.pkl")
-    vectorization = joblib.load("models/vectorizer.pkl")
+    LR = joblib.load("./models/logistic_regression.pkl")
+    DT = joblib.load("./models/decision_tree.pkl")
+    GBC = joblib.load("./models/gradient_boosting.pkl")
+    RFC = joblib.load("./models/random_forest.pkl")
+    vectorization = joblib.load("./models/vectorizer.pkl")
 except Exception as e:
     print(f"Erreur lors du chargement des modèles : {e}")
     exit(1)
 
-# Fonction de test manuel
 def manual_testing(review):
     try:
-        # Création d'un DataFrame temporaire pour le test
         test_df = pd.DataFrame({"text_": [review]})
         test_df["text_"] = test_df["text_"].apply(wordopt)
         
-        # Transformation du texte avec le vectorizer chargé
         new_xv_test = vectorization.transform(test_df["text_"])
 
-        # Vérification que le nombre de features est bien le même que celui du modèle
         if new_xv_test.shape[1] != vectorization.get_feature_names_out().shape[0]:
             print("Erreur : Le vectorizer ne correspond pas au modèle entraîné.")
             return
 
-        # Prédictions avec tous les modèles
+        # Prédictions 
         pred_LR = LR.predict(new_xv_test)
         pred_DT = DT.predict(new_xv_test)
         pred_GBC = GBC.predict(new_xv_test)
         pred_RFC = RFC.predict(new_xv_test)
 
-        # Affichage des résultats
         print(f"\nLR Prediction: {output_label(pred_LR[0])}")
         print(f"DT Prediction: {output_label(pred_DT[0])}")
         print(f"GBC Prediction: {output_label(pred_GBC[0])}")
@@ -60,7 +52,7 @@ def manual_testing(review):
     except Exception as e:
         print(f"Erreur lors de la prédiction : {e}")
 
-# Test interactif
+# Tester manuellement
 while True:
     user_input = input("Enter a review (or type 'exit' to quit): ").strip()
     if user_input.lower() == "exit":

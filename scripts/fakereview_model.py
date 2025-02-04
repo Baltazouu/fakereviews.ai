@@ -3,8 +3,6 @@ import string
 import joblib
 import pandas as pd
 import os
-import nltk
-from nltk.corpus import stopwords
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import classification_report
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -13,8 +11,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
 from xgboost import XGBClassifier
 
-nltk.download('stopwords')
-stop_words = set(stopwords.words('english'))
 
 file_path = "./data/fake_reviews_final.csv"
 if not os.path.exists(file_path):
@@ -46,7 +42,6 @@ def clean_text(text):
     text = re.sub(r"[%s]" % re.escape(string.punctuation), "", text)
     text = re.sub(r"\n", " ", text)
     text = re.sub(r"\w*\d\w*", "", text)
-    text = " ".join([word for word in text.split() if word not in stop_words])
     return text.strip()
 
 df_merge["text_"] = df_merge["text_"].astype(str).apply(clean_text)
@@ -75,7 +70,7 @@ for name, model in models.items():
     print(f"Score {name} : {score:.4f}")
     print(classification_report(y_test, predictions))
 
-model_dir = "models"
+model_dir = "./models"
 os.makedirs(model_dir, exist_ok=True)
 
 for name, model in models.items():
