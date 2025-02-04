@@ -22,6 +22,7 @@ try:
     DT = joblib.load("./models/decision_tree.pkl")
     GBC = joblib.load("./models/gradient_boosting.pkl")
     RFC = joblib.load("./models/random_forest.pkl")
+    XGB = joblib.load("./models/xgboost.pkl")
     vectorization = joblib.load("./models/vectorizer.pkl")
 except Exception as e:
     print(f"Erreur lors du chargement des modèles : {e}")
@@ -43,11 +44,13 @@ def manual_testing(review):
         pred_DT = DT.predict(new_xv_test)
         pred_GBC = GBC.predict(new_xv_test)
         pred_RFC = RFC.predict(new_xv_test)
+        pred_XGB = XGB.predict(new_xv_test)
 
         print(f"\nLR Prediction: {output_label(pred_LR[0])}")
         print(f"DT Prediction: {output_label(pred_DT[0])}")
         print(f"GBC Prediction: {output_label(pred_GBC[0])}")
-        print(f"RFC Prediction: {output_label(pred_RFC[0])}\n")
+        print(f"RFC Prediction: {output_label(pred_RFC[0])}")
+        print(f"XGB Prediction: {output_label(pred_XGB[0])}\n")
 
     except Exception as e:
         print(f"Erreur lors de la prédiction : {e}")

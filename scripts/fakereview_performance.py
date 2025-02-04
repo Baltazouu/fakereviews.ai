@@ -12,7 +12,8 @@ models_filenames = [
     "decision_tree.pkl",
     "gradient_boosting.pkl",
     "logistic_regression.pkl",
-    "random_forest.pkl"
+    "random_forest.pkl",
+    "xgboost.pkl"
 ]
 
 vectorizer_path = os.path.join(model_dir, "vectorizer.pkl")
