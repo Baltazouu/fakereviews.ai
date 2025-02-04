@@ -59,7 +59,7 @@ models = {
     "Decision Tree": DecisionTreeClassifier(max_depth=10, min_samples_split=10),
     "Gradient Boosting": GradientBoostingClassifier(random_state=0),
     "Random Forest": RandomForestClassifier(n_estimators=200, max_depth=10, random_state=0),
-    "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric='logloss')
+    "XGBoost": XGBClassifier(eval_metric='logloss')
 }
 
 for name, model in models.items():
@@ -81,3 +81,4 @@ for name, model in models.items():
 vectorizer_path = os.path.join(model_dir, "vectorizer.pkl")
 joblib.dump(vectorization, vectorizer_path)
 print(f"Vectorizer sauvegardé : {vectorizer_path}")
+

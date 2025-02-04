@@ -56,7 +56,10 @@ Pour visualiser les résultats exécuter cette commande `python scripts/fakerevi
 *Nous vous conseillons d'utiliser les 500 dernières lignes du dataset **fakereview_final.csv** pour vos tests.*
 
 
+## 6. Apprentissage non supervisé
 
+- Pour générer des modèles non supervisés executer le script python fakereview_model_unsupervised.py : `python scripts/fakereview_model_unsupervised.py `
+- Pour générer le graphique de résultat : `python scripts/fakereview_unsupervised_performance.py`
 
 
 
